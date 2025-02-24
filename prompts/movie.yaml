@@ -1,0 +1,16 @@
+name: movie_info
+description: 특정 영화의 정보를 요약하는 프롬프트
+_type: prompt
+input_variables:
+  - movie
+template: |
+  {movie}의 정보에 대해서 알려주세요.
+  영화의 특징을 다음의 양식에 맞게 정리해 주세요.
+  300자 내외로 작성해 주세요.
+  한글로 작성해 주세요.
+  ----
+  [양식]
+  1. 영화 제목
+  2. 장르
+  3. 감독
+  4. 배우
