@@ -1,1 +1,2 @@
 .env
+chat-history/.streamlit/secrets.toml
