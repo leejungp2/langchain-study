@@ -1,7 +1,9 @@
 from typing import List, Union
-from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from langchain_experimental.tools import PythonAstREPLTool
+# from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
+from langchain_experimental.agents import create_pandas_dataframe_agent
+# from langchain_experimental.tools import PythonAstREPLTool
 from langchain_openai import ChatOpenAI
+from langchain.agents.agent_types import AgentType
 from langchain_teddynote import logging
 from langchain_teddynote.messages import AgentStreamParser, AgentCallbacks
 from dotenv import load_dotenv
@@ -179,9 +181,8 @@ def create_agent(dataframe, selected_model="gpt-4o"):
     return create_pandas_dataframe_agent(
         ChatOpenAI(model=selected_model, temperature=0),
         dataframe,
-        verbose=False,
-        agent_type="tool-calling",
-        allow_dangerous_code=True,
+        verbose=True,
+        agent_type=AgentType.OPENAI_FUNCTIONS,
         prefix="You are a professional data analyst and expert in Pandas. "
         "You must use Pandas DataFrame(`df`) to answer user's request. "
         "\n\n[IMPORTANT] DO NOT create or overwrite the `df` variable in your code. \n\n"
@@ -230,18 +231,12 @@ def ask(query):
 
 # 메인 로직
 if clear_btn:
-    st.session_state["messa ges"] = []  # 대화 내용 초기화
+    st.session_state["messages"] = []  # 대화 내용 초기화
 
 if apply_btn and uploaded_file:
-    loaded_data = pd.read_csv(uploaded_file)  # CSV 파일 로드
-    st.session_state["df"] = loaded_data  # 데이터프레임 저장
-    st.session_state["python_tool"] = PythonAstREPLTool()  # Python 실행 도구 생성
-    st.session_state["python_tool"].locals[
-        "df"
-    ] = loaded_data  # 데이터프레임을 Python 실행 환경에 추가
-    st.session_state["agent"] = create_agent(
-        loaded_data, selected_model
-    )  # 에이전트 생성
+    loaded_data = pd.read_csv(uploaded_file)
+    st.session_state["df"] = loaded_data
+    st.session_state["agent"] = create_agent(loaded_data, selected_model)
     st.success("설정이 완료되었습니다. 대화를 시작해 주세요!")
 elif apply_btn:
     st.warning("파일을 업로드 해주세요.")
